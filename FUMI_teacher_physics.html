@@ -337,7 +337,7 @@
     <section class="paper-card report-card span-12"><h3>口径、来源与限制</h3><p class="method"><b>计算口径：</b>章节掌握度=本章实得分÷本章总分；大纲对标掌握度=Σ(题目得分×高考相关权重)÷Σ(题目满分×权重)；预测区间使用80%近似区间。多选题全对得满分，漏选且未错选得一半分，错选0分。湖南省未公开可直接复用的逐知识点近三年官方正确率，因此没有伪造“官方正确率”，缺失部分明确作为模型估计。</p><div class="source-list"><a href="https://www.pep.com.cn/xw/zt/rjwy/gzkb2020/202205/P020220517520664858048.pdf" target="_blank" rel="noopener">教育部《普通高中物理课程标准（2017年版2020年修订）》</a><a href="https://www.moe.gov.cn/fbh/live/2019/50754/mtbd/201906/t20190621_386987.html" target="_blank" rel="noopener">教育部：新高考命题以课程标准和高校人才选拔要求为依据</a><a href="https://jyt.hunan.gov.cn/jyt/sjyt/hnsjyksy/web/ksyzkzx/202606/t20260616_34004507.html" target="_blank" rel="noopener">湖南省教育考试院：2026年高考政策问答（物理原始分100分）</a><a href="https://www.gk100.com/read_5697677.htm" target="_blank" rel="noopener">2024湖南物理公开试题与答案整理</a><a href="https://www.gaokzx.com/gk/shitiku/142281.html" target="_blank" rel="noopener">2025湖南物理公开试题与答案整理</a><a href="https://m.51jiaoxi.com/gaokao/hunan/zhenti_wl/" target="_blank" rel="noopener">2026湖南物理公开真题目录</a></div></section></div>`;
   }
 
-  let aiBusy=false;
+  let aiBusy=false,aiHealth='unknown';
   const aiView=()=>document.querySelector('.view.active')?.id.replace('view-','')||'home';
   function learningSnapshot(){
     const d=reportData(),chapterResults=d.tested.map(c=>({chapter:c.title,mastery:chapterStats(c).pct})).sort((a,b)=>a.mastery-b.mastery),multi=d.qs.filter(q=>q.type==='multi'),abilities=Object.entries(d.ability).map(([name,v])=>({name,mastery:Math.round(v.e/v.t*100)})).sort((a,b)=>a.mastery-b.mastery),knowledge=Object.entries(d.knowledge).map(([name,v])=>({name,mastery:Math.round(v.e/v.t*100)})).sort((a,b)=>a.mastery-b.mastery);
@@ -361,6 +361,10 @@
     return {key:'general',mode:'general',canReveal:true,contextLabel:'课程首页',learningSnapshot:snapshot};
   }
   function aiEndpoint(){return location.protocol==='file:'?(state.aiEndpoint||'').trim():`${location.origin}/.netlify/functions/ai-tutor`}
+  async function checkAiHealth(){
+    const endpoint=aiEndpoint();if(!endpoint){aiHealth='missing';refreshAiPanel();return}aiHealth='checking';refreshAiPanel();
+    try{const res=await fetch(endpoint,{method:'GET',cache:'no-store'}),data=await res.json().catch(()=>({}));aiHealth=res.ok&&data.configured===true?'ok':'missing'}catch{aiHealth='error'}refreshAiPanel();
+  }
   function aiQuickPrompts(ctx){
     if(ctx.mode==='report')return ['最先补哪一章','解释预测区间','分析多选题问题','制定一周计划'];
     if(ctx.mode==='momentum')return ctx.canReveal?['为什么这样列式','换一种讲法','给我一道变式','总结本节']:['只提示第一步','这个图怎么看','检查我的思路','我混淆了什么'];
@@ -375,10 +379,10 @@
     if(aiBusy)$('#ai-messages').insertAdjacentHTML('beforeend','<div class="ai-msg assistant ai-thinking"><i></i><i></i><i></i></div>');
     $('#ai-quick').innerHTML=aiQuickPrompts(ctx).map(x=>`<button class="ai-chip" type="button" data-ai-prompt="${esc(x)}">${esc(x)}</button>`).join('');
     $('#ai-settings').classList.toggle('hidden',location.protocol!=='file:');$('#ai-endpoint').value=state.aiEndpoint||'';
-    setAiStatus(aiBusy?'正在组织分步提示…':endpoint?'AI已配置':'需要配置AI后台',aiBusy?'busy':endpoint?'ok':'');
+    const status=aiBusy?['正在组织分步提示…','busy']:!endpoint?['需要配置AI后台','']:aiHealth==='ok'?['AI已连接','ok']:aiHealth==='checking'?['正在检查AI后台…','busy']:aiHealth==='missing'?['后台缺少密钥','']:aiHealth==='error'?['AI后台连接失败','']:['联网后可对话',''];setAiStatus(status[0],status[1]);
     const list=$('#ai-messages');requestAnimationFrame(()=>{list.scrollTop=list.scrollHeight});
   }
-  function setAiOpen(open){$('#ai-panel').classList.toggle('open',open);$('#ai-panel').setAttribute('aria-hidden',String(!open));$('#ai-fab').setAttribute('aria-expanded',String(open));if(open){refreshAiPanel();setTimeout(()=>$('#ai-input').focus(),180)}}
+  function setAiOpen(open){$('#ai-panel').classList.toggle('open',open);$('#ai-panel').setAttribute('aria-hidden',String(!open));$('#ai-fab').setAttribute('aria-expanded',String(open));if(open){refreshAiPanel();checkAiHealth();setTimeout(()=>$('#ai-input').focus(),180)}}
   async function requestAi(message,context,history=[],purpose='tutor'){
     const endpoint=aiEndpoint();if(!endpoint)throw new Error('此HTML正以本地文件打开，请先在下方填写已部署的AI函数地址。');
     let parsed;try{parsed=new URL(endpoint)}catch{throw new Error('AI函数地址格式不正确。')};if(!['http:','https:'].includes(parsed.protocol))throw new Error('AI函数地址必须以 http:// 或 https:// 开头。');
@@ -396,7 +400,7 @@
   $('#ai-fab').addEventListener('click',()=>setAiOpen(!$('#ai-panel').classList.contains('open')));$('#ai-close').addEventListener('click',()=>setAiOpen(false));
   $('#ai-form').addEventListener('submit',e=>{e.preventDefault();sendAiMessage($('#ai-input').value)});$('#ai-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#ai-form').requestSubmit()}});
   $('#ai-quick').addEventListener('click',e=>{const b=e.target.closest('[data-ai-prompt]');if(b)sendAiMessage(b.dataset.aiPrompt)});
-  $('#ai-endpoint-save').addEventListener('click',()=>{const value=$('#ai-endpoint').value.trim();if(value&&!/^https?:\/\//i.test(value)){toast('地址需以 https:// 或 http:// 开头');return}state.aiEndpoint=value;save();refreshAiPanel();toast(value?'AI函数地址已保存':'AI函数地址已清除')});
+  $('#ai-endpoint-save').addEventListener('click',()=>{const value=$('#ai-endpoint').value.trim();if(value&&!/^https?:\/\//i.test(value)){toast('地址需以 https:// 或 http:// 开头');return}state.aiEndpoint=value;aiHealth='unknown';save();refreshAiPanel();checkAiHealth();toast(value?'AI函数地址已保存':'AI函数地址已清除')});
   $('#report-content').addEventListener('click',e=>{if(e.target.closest('[data-ai-report]'))analyzeReportWithAi()});document.addEventListener('keydown',e=>{if(e.key==='Escape')setAiOpen(false)});
 
   $('#export-btn').addEventListener('click',()=>{const payload={site:'FUMI老师·轨迹物理',exportedAt:new Date().toISOString(),progress:state,summary:reportData()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='FUMI老师_物理学习进度.json';a.click();URL.revokeObjectURL(url);toast('进度文件已导出')});
