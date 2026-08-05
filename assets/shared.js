@@ -11,11 +11,11 @@
   function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
   function toast(msg){let el=document.querySelector(".toast");if(!el){el=document.createElement("div");el.className="toast";document.body.appendChild(el)}el.textContent=msg;el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),1800)}
   function chapterStats(){
-    const s=load(),chs=(window.FUMI_PHYSICS?.chapters||[]);return chs.map(ch=>{const ev=Object.values(s.events).filter(e=>e.subject==="physics"&&e.chapter===ch.id);const qs=ev.filter(e=>e.type==="question"&&e.submitted);const lessons=ev.filter(e=>e.type==="lesson"&&e.completed);const correct=qs.filter(e=>e.correct).length;const pointMap={};ev.forEach(e=>{if(!e.point)return;pointMap[e.point] ||= {seen:0,correct:0,total:0};pointMap[e.point].seen++;if(e.type==="question"&&e.submitted){pointMap[e.point].total++;if(e.correct)pointMap[e.point].correct++}});const score=qs.length?Math.round(correct/qs.length*80+Math.min(20,lessons.length*20)):lessons.length?20:0;return{...ch,events:ev,questions:qs,lessons,correct,score,pointMap}})
+    const s=load(),chs=(window.FUMI_PHYSICS?.chapters||[]);return chs.map(ch=>{const ev=Object.values(s.events).filter(e=>e.subject==="physics"&&e.chapter===ch.id);const qs=ev.filter(e=>e.type==="question"&&e.submitted),graded=qs.filter(e=>typeof e.correct==="boolean");const lessons=ev.filter(e=>e.type==="lesson"&&e.completed);const correct=graded.filter(e=>e.correct).length;const pointMap={};ev.forEach(e=>{if(!e.point)return;pointMap[e.point] ||= {seen:0,correct:0,total:0};pointMap[e.point].seen++;if(e.type==="question"&&e.submitted&&typeof e.correct==="boolean"){pointMap[e.point].total++;if(e.correct)pointMap[e.point].correct++}});const score=graded.length?Math.round(correct/graded.length*80+Math.min(20,lessons.length*20)):lessons.length?20:0;return{...ch,events:ev,questions:qs,graded,lessons,correct,score,pointMap}})
   }
   function dimensionStats(){
     const s=load(),dims=["概念识别","模型建构","数学运算","图像理解","实验探究","迁移应用"];
-    return dims.map(name=>{const qs=Object.values(s.events).filter(e=>e.subject==="physics"&&e.type==="question"&&e.submitted&&e.dimension===name);return{name,count:qs.length,score:qs.length?Math.round(qs.filter(e=>e.correct).length/qs.length*100):null}})
+    return dims.map(name=>{const qs=Object.values(s.events).filter(e=>e.subject==="physics"&&e.type==="question"&&e.submitted&&e.dimension===name&&typeof e.correct==="boolean");return{name,count:qs.length,score:qs.length?Math.round(qs.filter(e=>e.correct).length/qs.length*100):null}})
   }
   function currentContext(){
     if(typeof window.FUMI_AI_CONTEXT==="function") return window.FUMI_AI_CONTEXT();
