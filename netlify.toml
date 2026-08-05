@@ -5,11 +5,6 @@
 [functions]
   node_bundler = "esbuild"
 
-[[redirects]]
-  from = "/"
-  to = "/FUMI_teacher_physics.html"
-  status = 200
-
 [[headers]]
   for = "/*"
   [headers.values]
@@ -17,3 +12,8 @@
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "SAMEORIGIN"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
