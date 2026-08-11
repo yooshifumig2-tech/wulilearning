@@ -1,5 +1,11 @@
 (function(){"use strict";
 const previous=window.FUMI_ANALYSIS||{},DETAILS=previous.details||{};
+DETAILS.r7=[
+"研究对象是除尘器内的带电尘粒以及装置在A、B两点形成的电场；本题题干已明确忽略尘粒重力。",
+"放电极接负极、集尘极接正极。尘粒获得电子后带负电，所受电场力F=qE与当地电场方向相反，指向集尘极。",
+"比较A、B两点时先看电场线疏密：A处更密，所以E_A>E_B；不能在电荷量未知时直接断定两处尘粒所受电场力大小。",
+"电场线只表示电场方向和疏密，并不是尘粒的运动轨迹；本题受力分析只保留题设要求的电场力，不额外加入重力或空气阻力。"
+];
 const C={ink:"#173b59",blue:"#2b7de9",orange:"#ef7137",green:"#23966a",red:"#d9475f",muted:"#8aa4b8",pale:"#f5f9fd"};
 const esc=s=>String(s).replace(/[&<>\"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 function text(x,y,s,o={}){return`<text x="${x}" y="${y}" fill="${o.c||C.ink}" font-size="${o.z||15}" font-weight="${o.w||600}" text-anchor="${o.a||"start"}">${esc(s)}</text>`}
