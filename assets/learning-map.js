@@ -14,6 +14,7 @@
     ?[...(D10?.dimensions||["符号规范","能量模型","空间关系","图像理解","电容动态分析","运动建模"])]
     :["概念识别","模型建构","数学运算","图像理解","实验探究","迁移应用"];
   const sectionData=isChapter10?(D10?.sections||[]):(D9?.chapters||[]);
+  const inquiryTotal=isChapter10?(D10?.inquiryTotal||sectionData.reduce((sum,section)=>sum+(section.inquiries?.length||0),0)):0;
   const chapterBranches=sectionData.map(section=>({
     id:isChapter10?section.code:section.id,
     title:section.title||"",
@@ -232,10 +233,13 @@
     const correct=graded.filter(event=>event.correct).length;
     const wrong=graded.filter(event=>!event.correct);
     const over=graded.filter(event=>event.overconfident);
+    const inquiries=all.filter(event=>event.type==="inquiry");
+    const inquiryCompleted=inquiries.filter(event=>event.completed);
+    const inquiryCorrected=inquiryCompleted.filter(event=>event.firstTry===false);
     const strength=[...new Set(graded.filter(event=>event.correct).map(event=>event.point).filter(Boolean))].slice(0,3);
     const weak=[...new Set(wrong.map(event=>event.point).filter(Boolean))].slice(0,3);
     return{
-      all,qs,graded,learn,optional,completedSections,correct,wrong,over,strength,weak,
+      all,qs,graded,learn,optional,inquiries,inquiryCompleted,inquiryCorrected,completedSections,correct,wrong,over,strength,weak,
       rate:graded.length?Math.round(correct/graded.length*100):0
     };
   }
@@ -243,7 +247,7 @@
   function draft(step){
     const x=summary();
     if(step==="O"){
-      return`${chapterLabel}目前完成${x.completedSections}/${branches().length}节学习，记录${x.qs.length}道核心题作答；其中可客观判分${x.graded.length}题，答对${x.correct}题，当前正确率为${x.rate}%。${x.optional.length?`另外完成${x.optional.length}道不计入必做进度的培优挑战。`:""}${x.over.length?`其中${x.over.length}题属于“有把握但做错”。`:""}`;
+      return`${chapterLabel}目前完成${x.completedSections}/${branches().length}节学习，${isChapter10?`完成${x.inquiryCompleted.length}/${inquiryTotal}道导学观察判断，`:""}记录${x.qs.length}道核心题作答；其中可客观判分${x.graded.length}题，答对${x.correct}题，当前正确率为${x.rate}%。${isChapter10&&x.inquiryCorrected.length?`有${x.inquiryCorrected.length}道导学判断经过排除错项后完成自我修正。`:""}${x.optional.length?`另外完成${x.optional.length}道不计入必做进度的培优挑战。`:""}${x.over.length?`其中${x.over.length}题属于“有把握但做错”。`:""}`;
     }
     if(step==="R"){
       return x.qs.length
@@ -307,6 +311,10 @@
       if(typeof event.correct==="boolean")return`${event.correct?"答对":"答错"}${event.confidence?" · 有把握":""}${event.optional?" · 培优挑战":""}`;
       return`过程作答已完成${event.optional?" · 培优挑战":""}`;
     }
+    if(event.type==="inquiry"){
+      if(event.completed)return event.firstTry?"导学观察判断 · 一次答对":`导学观察判断已修正 · 共尝试${event.attempts||1}次`;
+      return`导学观察判断中 · 已排除${event.wrongChoices?.length||0}项`;
+    }
     if(event.type==="lesson")return event.completed?"完成学习":"学习中";
     return"AI识别的可能误区";
   }
@@ -351,7 +359,7 @@
         ${dims.map(dimension=>`<article class="metric"><b>${dimension.score===null?"待测":`${dimension.score}%`}</b><span>${S.esc(dimension.name)} · ${dimension.count}题证据</span></article>`).join("")}
       </div>
       <div class="report-note">
-        <b>${x.graded.length?`已客观判分${x.graded.length}题，当前正确率${x.rate}%`:`还没有可判分的${chapterLabel}作答证据`}</b>${process?`；另有${process}道过程题已完成，不自动判错。`:"。"}<br>
+        <b>${x.graded.length?`已客观判分${x.graded.length}题，当前正确率${x.rate}%`:`还没有可判分的${chapterLabel}作答证据`}</b>${process?`；另有${process}道过程题已完成，不自动判错。`:"。"}${isChapter10?` 导学观察已完成${x.inquiryCompleted.length}/${inquiryTotal}道，不计入30题正确率。`:""}<br>
         ${best?`目前${S.esc(best.name)}已有相对稳定的证据👏`:`先完成几道代表题，让报告建立在真实作答上🌱`}
         ${weak&&weak.score<70?`${S.esc(weak.name)}是下一步优先回看的方向📌；系统只提醒补弱点，不会锁定进度。`:rated.length&&rated.every(item=>item.count<2)?"每项证据暂少，继续补充后再判断薄弱点，避免用单题下结论✨。":"继续补足未测维度，结论会更可靠✨。"}
       </div>`;

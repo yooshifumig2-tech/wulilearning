@@ -158,5 +158,5 @@
     {id:"t104",code:"10.4",title:"控制电荷仓库",question:"电容器连接或断开电源时，移动极板为何会得到不同结论？"},
     {id:"t105",code:"10.5",title:"控制粒子轨迹",question:"怎样让带电粒子连续加速、稳定偏转并准确打到荧光屏？"}
   ];
-  window.FUMI_CH10={id:"10",title:"静电场中的能量",sections,tasks,questions:{},dimensions:["符号规范","能量模型","空间关系","图像理解","电容动态分析","运动建模"]};
+  window.FUMI_CH10={id:"10",title:"静电场中的能量",sections,tasks,questions:{},inquiryTotal:21,dimensions:["符号规范","能量模型","空间关系","图像理解","电容动态分析","运动建模"]};
 })();
