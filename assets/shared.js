@@ -2,7 +2,7 @@
   "use strict";
   const KEY="fumi-learning-hub-v2";
   const AI_HISTORY="fumi-ai-history-v2";
-  const blank=()=>({version:2,events:{},orid:{physics:{O:"",R:"",I:"",D:""},math:{O:"",R:"",I:"",D:""}},customBranches:[],nodeNotes:{},updatedAt:Date.now()});
+  const blank=()=>({version:2,events:{},orid:{physics:{O:"",R:"",I:"",D:""},physics10:{O:"",R:"",I:"",D:""}},customBranches:[],nodeNotes:{},updatedAt:Date.now()});
   function load(){try{return Object.assign(blank(),JSON.parse(localStorage.getItem(KEY)||"{}"))}catch{return blank()}}
   function save(s){s.updatedAt=Date.now();localStorage.setItem(KEY,JSON.stringify(s));document.dispatchEvent(new CustomEvent("fumi:store",{detail:s}));setSaveState()}
   function upsert(event){const s=load();s.events[event.id]=Object.assign({},s.events[event.id]||{},event,{updatedAt:Date.now()});save(s);return s.events[event.id]}
@@ -20,7 +20,6 @@
   function currentContext(){
     if(window.FUMI_AI_PINNED_CONTEXT) return window.FUMI_AI_PINNED_CONTEXT;
     if(typeof window.FUMI_AI_CONTEXT==="function") return window.FUMI_AI_CONTEXT();
-    if(window.FUMI_DATA?.questions){let st={};try{st=JSON.parse(localStorage.getItem("fumi-math-map")||"{}")}catch{}const q=window.FUMI_DATA.questions[Number(st.current)||0];return{subject:"math",page:"初中数学40分钟水平测验",chapter:q?.domain,chapterId:q?.chapter,question:q?.stem,options:q?.options,studentAnswer:q?st.answers?.[q.id]:undefined,knowledgePoint:q?.point,canReveal:st.submitted===true,submitted:st.submitted===true}}
     return{subject:document.body.dataset.subject||"general",page:document.title,canReveal:true,summary:{chapters:chapterStats().map(x=>({chapter:x.id+" "+x.title,score:x.score,evidence:x.questions.length}))}};
   }
   async function aiHealth(){try{const r=await fetch("/.netlify/functions/ai-tutor",{cache:"no-store"});const d=await r.json();return d.configured===true}catch{return false}}
@@ -37,11 +36,6 @@
       try{const r=await fetch("/.netlify/functions/ai-tutor",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:text,context:c,history,purpose:c.purpose||"tutor"})});const d=await r.json();if(!r.ok)throw new Error(d.error||"AI暂时无法连接");messages.querySelector("[data-thinking]")?.remove();messages.insertAdjacentHTML("beforeend",`<div class="ai-msg assistant">${esc(d.reply)}${d.nextAction?"\n\n下一步："+esc(d.nextAction):""}</div>`);history.push({role:"user",content:text},{role:"assistant",content:d.reply});localStorage.setItem(AI_HISTORY,JSON.stringify(history.slice(-8)));if(d.misconception)upsert({id:"ai-"+Date.now(),subject:c.subject||"physics",chapter:c.chapterId||c.chapter,point:d.misconception,type:"ai-evidence",note:d.misconception})}catch(err){messages.querySelector("[data-thinking]")?.remove();messages.insertAdjacentHTML("beforeend",`<div class="ai-msg assistant">${esc(err.message)}</div>`)}finally{send.disabled=false;messages.scrollTop=messages.scrollHeight}}
     send.onclick=ask;input.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();ask()}}
   }
-  function syncLegacyMath(){
-    if(!window.FUMI_DATA?.questions)return;let legacy;try{legacy=JSON.parse(localStorage.getItem("fumi-math-map")||"null")}catch{}if(!legacy?.answers)return;
-    Object.entries(legacy.answers).forEach(([id,answer])=>{const q=window.FUMI_DATA.questions.find(x=>x.id===id);if(!q)return;const norm=v=>Array.isArray(v)?v.map(String).join("|"):String(v??"").replace(/[\s°]/g,"");const correct=norm(answer)===norm(q.answer);upsert({id:"math-"+id,subject:"math",chapter:q.domain,point:q.chapter+" · "+q.point,dimension:q.domain,type:"question",submitted:!!legacy.submitted,correct,answer,source:"math-diagnostic"})});
-  }
-  function mountLegacyTools(){if(!window.FUMI_DATA?.questions)return;document.body.insertAdjacentHTML("beforeend",`<div class="legacy-tools"><a href="index.html">⌂ 导航页</a><a href="learning-map.html?subject=math">思维导图与 ORID</a></div>`);syncLegacyMath();document.addEventListener("click",()=>setTimeout(syncLegacyMath,80));document.addEventListener("input",()=>setTimeout(syncLegacyMath,80))}
-  window.FUMI_STORE={load,save,upsert,setOrid,chapterStats,dimensionStats,syncLegacyMath,toast,esc};
-  document.addEventListener("DOMContentLoaded",()=>{setSaveState();mountLegacyTools();aiMount()});
+  window.FUMI_STORE={load,save,upsert,setOrid,chapterStats,dimensionStats,toast,esc};
+  document.addEventListener("DOMContentLoaded",()=>{setSaveState();aiMount()});
 })();

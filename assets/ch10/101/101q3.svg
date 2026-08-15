@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" role="img" aria-labelledby="title desc">
+  <title id="title">点电荷与等量异种电荷的对称点示意</title>
+  <desc id="desc">图甲中a、b到正点电荷距离相等；图乙中a、b关于两电荷连线严格对称，c位于负电荷一侧。</desc>
+  <defs>
+    <style>
+      .ink{stroke:#173a53;fill:none;stroke-width:3}.guide{stroke:#b8cfdb;fill:none;stroke-width:2;stroke-dasharray:8 8}.label{font:600 24px system-ui,sans-serif;fill:#173a53}.small{font:500 18px system-ui,sans-serif;fill:#617583}.plus{fill:#fff3ed;stroke:#d9573f;stroke-width:4}.minus{fill:#edf5ff;stroke:#2878d4;stroke-width:4}.point{fill:#f4a340;stroke:#fff;stroke-width:4}
+    </style>
+  </defs>
+  <rect width="1000" height="430" rx="24" fill="#fbfdff"/>
+  <text x="235" y="42" text-anchor="middle" class="label">甲　单个正点电荷</text>
+  <circle cx="235" cy="220" r="118" class="guide"/>
+  <circle cx="235" cy="220" r="30" class="plus"/>
+  <text x="235" y="229" text-anchor="middle" class="label">+Q</text>
+  <line x1="235" y1="220" x2="318" y2="136" class="guide"/>
+  <line x1="235" y1="220" x2="318" y2="304" class="guide"/>
+  <circle cx="318" cy="136" r="13" class="point"/>
+  <circle cx="318" cy="304" r="13" class="point"/>
+  <text x="342" y="134" class="label">a</text>
+  <text x="342" y="310" class="label">b</text>
+  <text x="235" y="382" text-anchor="middle" class="small">a、b 到 +Q 的距离相等</text>
+
+  <line x1="500" y1="58" x2="500" y2="372" class="guide"/>
+  <text x="750" y="42" text-anchor="middle" class="label">乙　等量异种电荷</text>
+  <line x1="620" y1="220" x2="880" y2="220" class="ink"/>
+  <line x1="750" y1="72" x2="750" y2="368" class="guide"/>
+  <circle cx="650" cy="220" r="30" class="minus"/>
+  <circle cx="850" cy="220" r="30" class="plus"/>
+  <text x="650" y="229" text-anchor="middle" class="label">−Q</text>
+  <text x="850" y="229" text-anchor="middle" class="label">+Q</text>
+  <circle cx="750" cy="115" r="13" class="point"/>
+  <circle cx="750" cy="325" r="13" class="point"/>
+  <circle cx="695" cy="265" r="13" class="point"/>
+  <text x="775" y="113" class="label">a</text>
+  <text x="775" y="332" class="label">b</text>
+  <text x="668" y="288" class="label">c</text>
+  <text x="750" y="396" text-anchor="middle" class="small">a、b 关于电荷连线严格对称</text>
+</svg>

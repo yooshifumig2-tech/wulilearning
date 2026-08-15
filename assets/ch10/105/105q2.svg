@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 430" role="img" aria-labelledby="title desc">
+  <title id="title">平行板电容器中电子的加速</title>
+  <desc id="desc">左侧负极板、右侧正极板，电场向左，电子受力和运动方向向右；标出电压九伏、板距一点零厘米和电容一点五乘十的负十次方法拉。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1"><stop stop-color="#f6fbff"/><stop offset="1" stop-color="#fff8f1"/></linearGradient>
+    <marker id="blueArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3Z" fill="#2878d4"/></marker>
+    <marker id="orangeArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3Z" fill="#e56b31"/></marker>
+    <marker id="greenArrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3Z" fill="#25875e"/></marker>
+  </defs>
+  <rect width="920" height="430" rx="28" fill="url(#bg)"/>
+  <text x="42" y="48" fill="#173a53" font-family="Arial,'Noto Sans SC',sans-serif" font-size="25" font-weight="700">已知条件示意 · 电子由静止开始</text>
+  <rect x="158" y="92" width="18" height="242" rx="6" fill="#2878d4"/>
+  <rect x="744" y="92" width="18" height="242" rx="6" fill="#e56b31"/>
+  <text x="167" y="74" text-anchor="middle" fill="#2878d4" font-family="Arial,sans-serif" font-size="30" font-weight="700">−</text>
+  <text x="753" y="74" text-anchor="middle" fill="#e56b31" font-family="Arial,sans-serif" font-size="30" font-weight="700">＋</text>
+  <text x="116" y="215" text-anchor="middle" fill="#173a53" font-family="Arial,'Noto Sans SC',sans-serif" font-size="18" font-weight="700">负极板</text>
+  <text x="806" y="215" text-anchor="middle" fill="#173a53" font-family="Arial,'Noto Sans SC',sans-serif" font-size="18" font-weight="700">正极板</text>
+  <g stroke="#e56b31" stroke-width="4" marker-end="url(#orangeArrow)">
+    <line x1="706" y1="135" x2="218" y2="135"/><line x1="706" y1="205" x2="218" y2="205"/><line x1="706" y1="275" x2="218" y2="275"/>
+  </g>
+  <text x="462" y="118" text-anchor="middle" fill="#e56b31" font-family="Georgia,serif" font-size="23" font-weight="700">E（由正极板指向负极板）</text>
+  <circle cx="272" cy="244" r="25" fill="#fff" stroke="#173a53" stroke-width="3"/>
+  <text x="272" y="251" text-anchor="middle" fill="#173a53" font-family="Georgia,serif" font-size="22" font-weight="700">−e</text>
+  <line x1="306" y1="244" x2="458" y2="244" stroke="#25875e" stroke-width="6" marker-end="url(#greenArrow)"/>
+  <text x="382" y="225" text-anchor="middle" fill="#25875e" font-family="Arial,'Noto Sans SC',sans-serif" font-size="18" font-weight="700">Fₑ 与运动方向</text>
+  <line x1="176" y1="361" x2="744" y2="361" stroke="#2878d4" stroke-width="3"/>
+  <line x1="176" y1="347" x2="176" y2="375" stroke="#2878d4" stroke-width="3"/><line x1="744" y1="347" x2="744" y2="375" stroke="#2878d4" stroke-width="3"/>
+  <text x="460" y="391" text-anchor="middle" fill="#2878d4" font-family="Georgia,serif" font-size="22" font-weight="700">d = 1.0 cm</text>
+  <rect x="325" y="302" width="270" height="42" rx="21" fill="#173a53"/>
+  <text x="460" y="329" text-anchor="middle" fill="#fff" font-family="Arial,'Noto Sans SC',sans-serif" font-size="18" font-weight="700">U = 9.0 V　 C = 1.5×10⁻¹⁰ F</text>
+</svg>
